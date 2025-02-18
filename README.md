@@ -20,8 +20,8 @@ Create template REST API with Golang Fiber.
 ## 📦 Installation
 
 ```sh
-git clone https://github.com/username/repo.git
-cd repo
+git clone https://github.com/snapsnap/golang-fiber-rest-api.git
+cd golang-fiber-rest-api
 ```
 
 ## ✔ Running App
