@@ -23,15 +23,31 @@ func NewUser(app *fiber.App, userService domain.UserService) {
 
 	app.Post("/register", ua.Register)
 
-	userGroup := app.Group("/users", middleware.JWTMiddleware())
-	userGroup.Get("/", ua.Index)
+	userGroup := app.Group("/users")
+	userGroup.Use(middleware.JWTMiddleware())
+	userGroup.Post("/", ua.Index)
 }
 
 func (ua userApi) Index(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), 10*time.Second)
 	defer cancel()
 
-	res, err := ua.userService.Index(c)
+	req := dto.UserRequest{
+		Limit: 10,
+		Page:  1,
+	}
+	if err := ctx.BodyParser(&req); err != nil {
+		return ctx.Status(http.StatusUnprocessableEntity).JSON(dto.CreateResponseError("Invalid request body", ""))
+	}
+
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+
+	res, err := ua.userService.Index(c, req.Limit, req.Page)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(dto.CreateResponseError(err.Error(), ""))
 	}

@@ -20,8 +20,9 @@ func NewUser(con *goqu.Database) domain.UserRepository {
 }
 
 // FindAll implements domain.UserRepository.
-func (ur *userRepository) FindAll(ctx context.Context) (result []domain.User, err error) {
-	dataset := ur.db.From("users").Where(goqu.C("deleted_at").IsNull())
+func (ur *userRepository) FindAll(ctx context.Context, limit int, page int) (result []domain.User, err error) {
+	offset := (page - 1) * limit
+	dataset := ur.db.From("users").Where(goqu.C("deleted_at").IsNull()).Limit(uint(limit)).Offset(uint(offset))
 	err = dataset.ScanStructsContext(ctx, &result)
 	return
 }

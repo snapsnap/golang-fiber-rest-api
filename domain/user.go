@@ -17,7 +17,7 @@ type User struct {
 }
 
 type UserRepository interface {
-	FindAll(ctx context.Context) ([]User, error)
+	FindAll(ctx context.Context, limit int, page int) ([]User, error)
 	FindById(ctx context.Context, id string) (User, error)
 	Save(ctx context.Context, u *User) error
 	Update(ctx context.Context, u *User) error
@@ -25,6 +25,6 @@ type UserRepository interface {
 }
 
 type UserService interface {
-	Index(ctx context.Context) ([]dto.UserData, error)
+	Index(ctx context.Context, limit int, page int) ([]dto.UserData, error)
 	Create(ctx context.Context, req dto.RegisterUserRequest) error
 }

@@ -19,8 +19,8 @@ func NewUser(userRepository domain.UserRepository) domain.UserService {
 }
 
 // Index implements domain.UserService.
-func (u *userService) Index(ctx context.Context) ([]dto.UserData, error) {
-	users, err := u.userRepo.FindAll(ctx)
+func (u *userService) Index(ctx context.Context, limit int, page int) ([]dto.UserData, error) {
+	users, err := u.userRepo.FindAll(ctx, limit, page)
 	if err != nil {
 		return nil, err
 	}
