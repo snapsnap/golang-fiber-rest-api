@@ -16,6 +16,7 @@ Create template REST API with Golang Fiber.
 - Daily Logging
 - Swagger API Documentation
 - JWT Authentication
+- Input Validation
 
 ## 📦 Installation
 

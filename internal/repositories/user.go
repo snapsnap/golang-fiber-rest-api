@@ -13,9 +13,9 @@ type userRepository struct {
 	db *goqu.Database
 }
 
-func NewUser(con *sql.DB) domain.UserRepository {
+func NewUser(con *goqu.Database) domain.UserRepository {
 	return &userRepository{
-		db: goqu.New("default", con),
+		db: con,
 	}
 }
 

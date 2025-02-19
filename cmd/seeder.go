@@ -1,23 +1,46 @@
 package cmd
 
 import (
+	"api-dev/internal/utils"
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 )
 
 // RunSeeder menjalankan seeder untuk data awal
 func RunSeeder(db *sql.DB) {
 	fmt.Println("Running seeder...")
+	SeedUser(db)
+	fmt.Println("Seeder completed successfully!")
+}
 
-	query := `INSERT INTO users (name, email) VALUES 
-		('Admin', 'admin@example.com'),
-		('User1', 'user1@example.com')`
+// SeedUser inserts initial data into the users table
+func SeedUser(db *sql.DB) {
 
-	_, err := db.Exec(query)
-	if err != nil {
-		log.Fatalf("Seeder failed: %v", err)
+	users := []struct {
+		name     string
+		email    string
+		password string
+	}{
+		{"John Doe", "john@example.com", "password123"},
+		{"Jane Doe", "jane@example.com", "securepass"},
+		{"Alice", "alice@example.com", "mypassword"},
 	}
 
-	fmt.Println("Seeder completed successfully!")
+	for _, user := range users {
+		hashedPassword, err := utils.HashPassword(user.password)
+		if err != nil {
+			log.Fatalf("Failed to hash password: %v", err)
+		}
+
+		// Format waktu ke dalam format timestamp SQL
+		createdAt := time.Now().Format("2006-01-02 15:04:05")
+
+		query := `INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)`
+		_, err = db.Exec(query, user.name, user.email, hashedPassword, createdAt)
+		if err != nil {
+			log.Fatalf("Seeding failed: %v", err)
+		}
+	}
 }

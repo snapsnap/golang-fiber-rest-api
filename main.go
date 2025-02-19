@@ -12,13 +12,18 @@ import (
 	"os"
 	"time"
 
+	"github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	"github.com/gofiber/fiber/v2"
+	fiberlog "github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
+
 	cnf := config.Get()
 	dbConnection := connection.GetDatabase(cnf.Database)
+	db := goqu.New("mysql", dbConnection)
 	defer dbConnection.Close()
 
 	app := fiber.New()
@@ -66,7 +71,7 @@ func main() {
 	loggerTest.Println("Server is starting...")
 
 	// Daftarkan repository
-	userRepository := repositories.NewUser(dbConnection)
+	userRepository := repositories.NewUser(db)
 
 	// Daftarkan service
 	userService := services.NewUser(userRepository)
@@ -75,6 +80,6 @@ func main() {
 	api.NewUser(app, userService)
 
 	loggerTest.Println("Fiber server is running on : " + cnf.Server.Port)
-	log.Fatal(app.Listen(cnf.Server.Host + ":" + cnf.Server.Port))
+	fiberlog.Info(app.Listen(cnf.Server.Host + ":" + cnf.Server.Port))
 
 }

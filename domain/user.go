@@ -26,4 +26,5 @@ type UserRepository interface {
 
 type UserService interface {
 	Index(ctx context.Context) ([]dto.UserData, error)
+	Create(ctx context.Context, req dto.RegisterUserRequest) error
 }

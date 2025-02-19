@@ -4,6 +4,8 @@ import (
 	"api-dev/domain"
 	"api-dev/dto"
 	"context"
+	"database/sql"
+	"time"
 )
 
 type userService struct {
@@ -31,4 +33,15 @@ func (u *userService) Index(ctx context.Context) ([]dto.UserData, error) {
 		})
 	}
 	return userData, nil
+}
+
+// Create implements domain.UserService.
+func (u *userService) Create(ctx context.Context, req dto.RegisterUserRequest) error {
+	user := domain.User{
+		Name:      req.Name,
+		Email:     req.Email,
+		Password:  req.Password,
+		CreatedAt: sql.NullTime{Valid: true, Time: time.Now()},
+	}
+	return u.userRepo.Save(ctx, &user)
 }
